@@ -22,13 +22,27 @@ use DaZeus2Module;
 use base qw(DaZeus2Module);
 use MIME::Base64;
 
+my %lastJeMoederableMessages;
+
 sub told
 {
 	my ($self, $mess) = @_;
 	my $p = $mess->{perms};
 	my ($command, $rest, @rest) = $self->parseMsg($mess);
 	my $who = $mess->{who};
+
+	if($mess->{channel} ne 'msg') {
+		my $body = $mess->{body};
+		if($body =~ /\s(is|ben|bent)\s/) {
+			my (undef, $what) = $body =~ /\s(is|ben|bent)\s(.+)$/i;
+			$lastJeMoederableMessages{$mess->{channel}} = $what;
+		} else {
+			$lastJeMoederableMessages{$mess->{channel}} = $body;
+		}
+	}
+
 	return if !defined $command;
+
 	if($command eq "koffie") {
 		return "Ey, ga dat ff zelf pakken, $who! Ik ben je SLAAF niet!";
 	} elsif($command eq "cola" ) {
@@ -211,6 +225,11 @@ sub told
 		return "http://www.google.com/codesearch?q=" . $search;
 	} elsif( $command eq "moeder" or $command eq "jemoeder" 
 		 or $command eq "m" ) {
+		if($rest eq "") {
+			if(defined($lastJeMoederableMessages{$mess->{channel}})) {
+				$rest = $lastJeMoederableMessages{$mess->{channel}};
+			}
+		}
 		if($rest eq "") {
 			return "Je moeder is een null-pointer!";
 		}
