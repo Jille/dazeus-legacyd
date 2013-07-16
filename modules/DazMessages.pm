@@ -31,7 +31,7 @@ sub told
 	my ($command, $rest, @rest) = $self->parseMsg($mess);
 	my $who = $mess->{who};
 
-	if($mess->{channel} ne 'msg') {
+	if(!defined($command) && $mess->{channel} ne 'msg') {
 		my $body = $mess->{body};
 		if($body =~ /\s(is|ben|bent)\s/) {
 			my (undef, $what) = $body =~ /\s(is|ben|bent)\s(.+)$/i;
