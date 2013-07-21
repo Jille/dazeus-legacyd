@@ -33,11 +33,14 @@ sub told
 
 	if(!defined($command) && $mess->{channel} ne 'msg') {
 		my $body = $mess->{body};
-		if($body =~ /\s(is|ben|bent)\s/) {
-			my (undef, $what) = $body =~ /\s(is|ben|bent)\s(.+)$/i;
-			$lastJeMoederableMessages{$mess->{channel}} = $what;
+		if($body =~ /\s(is|ben|bent|it's)\s/) {
+			my (undef, $what) = $body =~ /\s(is|ben|bent|it's)\s(.+)$/i;
+			$lastJeMoederableMessages{$mess->{channel}} = "is " . $what;
+		} elsif($body =~ /\s(kan|vereist|gaat|moet)\s/) {
+			my ($verb, $what) = $body =~ /\s(kan|vereist|gaat|moet)\s(.+)$/i;
+			$lastJeMoederableMessages{$mess->{channel}} = $verb . " " . $what;
 		} else {
-			$lastJeMoederableMessages{$mess->{channel}} = $body;
+			$lastJeMoederableMessages{$mess->{channel}} = "is " . $body;
 		}
 	}
 
@@ -229,11 +232,13 @@ sub told
 			if(defined($lastJeMoederableMessages{$mess->{channel}})) {
 				$rest = $lastJeMoederableMessages{$mess->{channel}};
 			}
+		} elsif($rest ne "") {
+			$rest = "is " . $rest;
 		}
 		if($rest eq "") {
 			return "Je moeder is een null-pointer!";
 		}
-		return "Je moeder is " . $rest . "!";
+		return "Je moeder " . $rest . "!";
 	} elsif( $command eq "sarcasm") {
 		return "+-------+\n|Sarcasm|\n+---+---+\n    | (o.o;\n    o=";
 	}
